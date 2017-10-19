@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pylab as plt
 from attention_crop import *
+import helper
 
 
 k = 0.05
@@ -112,6 +113,7 @@ def test_get_derivatives(get_derivatives):
             print(result.eval())
             print("shape is {}".format(result.eval().shape))
 
+
 def test_multiply_broadcast():
     with tf.Graph().as_default():
         ones = tf.ones((2, 2))
@@ -122,6 +124,22 @@ def test_multiply_broadcast():
         product = tf.multiply(packed, twos_expanded)
         with tf.Session() as sess:
             print(product.eval())
+
+
+def test_attention_crop():
+    image_input = tf.placeholder([None, 400, 400, 3], name="image_input")
+    params = tf.Variable([0.5, 0.5, 0.3])
+    output_size = 200
+    def normalize(x):
+        return x / 255 - 0.5
+
+    def one_hot_encode(x):
+        return tf.one_hot(x)
+
+    image_output = attention_crop(image_input, params, output_size)
+    fc = tf.contrib.layers.fully_connected(image_output)
+
+
 
 
 

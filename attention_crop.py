@@ -135,8 +135,6 @@ def get_grad_f_helper(out_size):
     return get_grad_f2
 
 
-
-
 @tf.RegisterGradient("AttentionCrop")
 def _attention_crop_grad(op, grad):
     images = op.inputs[0]
@@ -150,7 +148,6 @@ def _attention_crop_grad(op, grad):
     # count1, count2, count3 ## what are these guys
     # top is exactly an image of three channels
     grad2 = tf.abs(grad)
-    #channel_max = tf.reduce_max(grad2, axis=[1, 2])
     grad_normalized = tf.map_fn(normalize_grad, grad2)
     grad_normalized = grad_normalized * 0.0000001
     out_size = grad.get_shape().as_list[2]
@@ -160,14 +157,6 @@ def _attention_crop_grad(op, grad):
     grad_product = derivatives_f * grad_normalized
     grad_to_params = tf.reduce_sum(grad_product, axis=[0, 1])
 
-    #for each of the sample:
-        # obtain tx, ty and tl
-        # find max absolute value in top grads with each channel
-        # loop through indices of the top image
-            # convert grad to their absolute value
-            # set grad to grad / max(grab_with_channel) * 0.0000001
-            # get coordinates on the original bottom image
-            # update gradients to each of the three params
     return tf.zeros_like(images), grad_to_params, tf.zeros_like(out_image_size)
 
 
